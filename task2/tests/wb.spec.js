@@ -22,7 +22,8 @@ test('Wildberries search transportir', async () => {
 
   const page = await context.newPage();
 
-
+  //Ожидание запуска процесса браузера
+  await page.waitForTimeout(500);
   await test.step("Открытие страницы", async () => {
     await page.goto('https://www.wildberries.ru/', {
       waitUntil: 'commit',
