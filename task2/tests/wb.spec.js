@@ -25,8 +25,11 @@ test('Wildberries search transportir', async () => {
 
   await test.step("Открытие страницы", async () => {
     await page.goto('https://www.wildberries.ru/', {
-      waitUntil: 'domcontentloaded'
+      waitUntil: 'commit',
+      timeout: 30000
     });
+    await page.waitForURL(/wildberries\.ru/, { timeout: 15000 });
+
 
     // Если сайт грузится медленно или идет проверка браузера или открылся попап
     await Promise.any([

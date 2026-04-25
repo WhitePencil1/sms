@@ -6,7 +6,7 @@ const n = 2;
 const exampleDir = path.resolve('example');
 
 async function getJsDirs(rootPaths) {
-    const result = [];
+    const jsDirs = [];
     const stack = rootPaths.map(p => path.join(exampleDir, p));
 
     while(stack.length !== 0) {
@@ -18,7 +18,7 @@ async function getJsDirs(rootPaths) {
         if(entries[0].isFile()) {
             const jsCount = entries.filter(file => file.name.endsWith('.js')).length;
             if(jsCount > 0) {
-                result.push({
+                jsDirs.push({
                     path: curDir,
                     jsFiles: jsCount
                 });
@@ -29,7 +29,7 @@ async function getJsDirs(rootPaths) {
             for(const item of entries) stack.push(path.join(curDir, item.name));
         }
     }
-    return result;
+    return jsDirs;
 }
 
 function divideGroups(n, folders) {
@@ -41,10 +41,10 @@ function divideGroups(n, folders) {
         });
     }
 
-    const sorted = [...folders].sort((a, b) => b.jsFiles - a.jsFiles)
+    const sorted = [...folders].sort((a, b) => b.jsFiles - a.jsFiles);
 
     for (const entry of sorted) {
-        groups.sort((a, b) => a.total - b.total)
+        groups.sort((a, b) => a.total - b.total);
 
         groups[0].dirs.push(entry.path);
         groups[0].total += entry.jsFiles;
@@ -52,12 +52,33 @@ function divideGroups(n, folders) {
     return groups;
 }
 
+function printJsDirs(jsDirs) {
+    for (const dir of jsDirs) {
+        const relativePath = path.relative(exampleDir, dir.path);
+        const prettyPath = relativePath.split(path.sep).join(' \\ ');
+        console.log(`${prettyPath} (${dir.jsFiles})`);
+    }
+}
+
+function printGroups(groups, jsDirs) {
+    for (let i = 0; i < groups.length; i++) {
+        console.log(`[${i + 1}]`);
+        for (const dirPath of groups[i].dirs) {
+            const folder = jsDirs.find(item => item.path === dirPath);
+            const relativePath = path.relative(exampleDir, folder.path);
+            const prettyPath = relativePath.split(path.sep).join(' \\ ');
+            console.log(`${prettyPath} (${folder.jsFiles})`);
+        }
+    }
+}
 
 async function main() {
     const jsFolders = await getJsDirs(rootPaths);
-    console.log(jsFolders);
-
-    const groups = divideGroups(n, jsFolders)
-    console.log(groups);
+    console.log('Задание 1');
+    printJsDirs(jsFolders);
+    
+    const groups = divideGroups(n, jsFolders);
+    console.log('\n\nЗадание 2');
+    printGroups(groups, jsFolders);
 }
 main();
